@@ -1,12 +1,8 @@
 package main
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
-	"strconv"
-	"strings"
-	"time"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 	pb "github.com/hyperledger/fabric/protos/peer"
@@ -33,6 +29,33 @@ func main() {
 }
 
 func (t *SimpleChaincode) Init(stub shim.ChaincodeStubInterface) pb.Response {
+	function, args := stub.GetFunctionAndParameters()
+	fmt.Println("init is running " + function)
+
+	uuid := args[0]
+	material := args[1]
+	make := args[2]
+	material_location := args[3]
+	shipment_status := args[4]
+	product_status := args[5]
+
+
+	// ==== Create product object and marshal to JSON ====
+	objectType := "product"
+	product := &product{objectType, uuid, material, make, material_location, shipment_status, product_status}
+	productJSONasBytes, err := json.Marshal(product)
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+
+
+	err = stub.PutState(uuid, productJSONasBytes)
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+
+	fmt.Println("- end init product")
+
 	return shim.Success(nil)
 }
 
@@ -43,8 +66,7 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Response {
 	// Handle different functions
 	if function == "createProduct" { 
 		return t.createProduct(stub, args)
-	}
-	else if function == "searchProduct" { //read a product
+	}else if function == "searchProduct" { //read a product
 		return t.searchProduct(stub, args)
 	} 
 
@@ -99,6 +121,8 @@ func (t *SimpleChaincode) createProduct(stub shim.ChaincodeStubInterface, args [
 }
 
 func (t *SimpleChaincode) searchProduct(stub shim.ChaincodeStubInterface, args []string) pb.Response {
+
+	fmt.println("invoking search function")
 	var uuid, jsonResp string
 	var err error
 
@@ -112,9 +136,9 @@ func (t *SimpleChaincode) searchProduct(stub shim.ChaincodeStubInterface, args [
 		jsonResp = "{\"Error\":\"Failed to get state for " + uuid + "\"}"
 		return shim.Error(jsonResp)
 	} else if valAsbytes == nil {
-		jsonResp = "{\"Error\":\"Marble does not exist: " + uuid + "\"}"
+		jsonResp = "{\"Error\":\"product does not exist: " + uuid + "\"}"
 		return shim.Error(jsonResp)
 	}
-
+	fmt.println("Succesffully searched product")
 	return shim.Success(valAsbytes)
 }
