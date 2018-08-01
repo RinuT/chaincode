@@ -63,67 +63,14 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Response {
 	fmt.Println("invoke is running " + function)
 
 	// Handle different functions
-	if function == "createProduct" {
-		return t.createProduct(stub, args)
-	} else if function == "searchProduct" { //read a product
+	if function == "searchProduct" { //read a product
 		return t.searchProduct(stub, args)
 	} else if function == "searchPro" {
 		return t.searchPro(stub, args)
 	}
-	
+
 	fmt.Println("invoke did not find func: " + function) //error
 	return shim.Error("Received unknown function invocation")
-}
-
-func (t *SimpleChaincode) createProduct(stub shim.ChaincodeStubInterface, args []string) pb.Response {
-	var err error
-
-	if len(args) != 6 {
-		return shim.Error("Incorrect number of arguments. Expecting 6")
-	}
-
-	// ==== Input sanitation ====
-	fmt.Println("- start init product")
-
-	uuid := args[0]
-	material := args[1]
-	make := args[2]
-	material_location := args[3]
-	shipment_status := args[4]
-	product_status := args[5]
-
-	// ==== Check if product already exists ====
-	productAsBytes, err := stub.GetState(uuid)
-	if err != nil {
-		return shim.Error("Failed to get product: " + err.Error())
-	} else if productAsBytes != nil {
-		fmt.Println("This product already exists: " + uuid)
-		return shim.Error("This product already exists: " + uuid)
-	}
-
-	// ==== Create product object and marshal to JSON ====
-	objectType := "product"
-	product := &product{objectType, uuid, material, make, material_location, shipment_status, product_status}
-	fmt.Println(product)
-	//marshal- convert go datatypes to json format
-
-	// productJSONasString := `{"docType":"product",  "uuid": "` + uuid + `", "make": "` + make + `", "material_location": ` + material_location + `, "product_status": "` + product_status + `, "shipment_status": ` + shipment_status + `"}`
-	// productJSONasBytes := []byte(productJSONasString)
-
-	productJSONasBytes, err := json.Marshal(product)
-	fmt.Println(productJSONasBytes)
-	if err != nil {
-		return shim.Error(err.Error())
-	}
-
-	// === Save product to state ===
-	err = stub.PutState(uuid, productJSONasBytes)
-	if err != nil {
-		return shim.Error(err.Error())
-	}
-
-	fmt.Println("- end init product")
-	return shim.Success(nil)
 }
 
 func (t *SimpleChaincode) searchProduct(stub shim.ChaincodeStubInterface, args []string) pb.Response {
