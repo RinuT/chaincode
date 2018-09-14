@@ -211,7 +211,7 @@ func (t *ShipmentChaincode) updateTemparature(stub shim.ChaincodeStubInterface, 
 	ShipmentToUpdate.Temperature = newStatus //change the temperature
 
 	ShipmentJSONasBytes, _ := json.Marshal(ShipmentToUpdate)
-	err = stub.PutState(ShipmentId, ShipmentJSONasBytes) //rewrite the marble
+	err = stub.PutState(ShipmentId, ShipmentJSONasBytes) 
 	if err != nil {
 		return shim.Error(err.Error())
 	}
@@ -459,7 +459,7 @@ func (t *ShipmentChaincode) queryHistory(stub shim.ChaincodeStubInterface, args 
 		buffer.WriteString(", \"Value\":")
 		// if it was a delete operation on given key, then we need to set the
 		//corresponding value null. Else, we will write the response.Value
-		//as-is (as the Value itself a JSON marble)
+		//as-is (as the Value itself a JSON )
 		if response.IsDelete {
 			buffer.WriteString("null")
 		} else {
