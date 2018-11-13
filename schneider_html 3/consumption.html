@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Schneider</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="css/bootstrap.min.css" rel="stylesheet">
+<link href="css/style.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+<script src="https://rawgit.com/gdi2290/angular-websocket/v1.0.9/angular-websocket.js"></script>
+</head>
+
+<body>
+    <div ng-app="myApp" ng-controller="myCtrl">
+<div class="container-fluid"> 
+  
+  <!-- Header Section starts here-->
+  <header class="header_bg">
+    <div class="header_left"></div>
+    <div class="header_right"></div>
+    <div class="container">
+      <div class="logo_pharma"> <a href="index.html"><img src="images/logo.png" alt="logo"/></a> </div>
+      <div class="banner_text_right"> Blockchain for Business<br>
+        <b>WITH IBM BLOCKCHAIN</b> </div>
+    </div>
+  </header>
+  <!-- Header Section ends here--> 
+  
+  <!-- Content Section ends here-->
+  <div class="breadcrumb_main">
+    <div class="left"><a href="#"><img src="images/back.png">&nbsp;Home</a></div>
+    <div class="right"><a href="#"><img src="images/sign_out.png">&nbsp;Signout</a></div>
+    <div class="clearfix"></div>
+  </div>
+  <div class="dashboard">
+    <div class="dashboard_left">
+      <h1>Schneider</h1>
+      <div class="user"><span>Username</span>
+        Cheif Supplying Officer</div>
+      <div class="left_menu">
+        <button class="accordion"><img src="images/icon_1.gif">&nbsp;&nbsp;Create</button>
+        <div class="panel">
+            <ul>
+              <li><a href="schneider_purchase.html">Purchase Order</a></li>
+              <li><a href="schneider_goodReceipt.html">Goods Receipt</a></li>
+            </ul>
+          </div>
+          <button class="accordion_1" ng-click="navigate('consumption.html')"><img src="images/icon_2.gif">&nbsp;&nbsp;Consumption</button>
+          <button class="accordion_1" ng-click="navigate('payment.html')"><img src="images/icon_3.gif">&nbsp;&nbsp;Payment</button>
+          <button class="accordion"><img src="images/icon_4.gif">&nbsp;&nbsp;Search</button>
+          <div class="panel">
+            <ul>
+              <li><a href="search_po.html">Purchase Order</a></li>
+              <!-- <li><a href="#">Goods Receipt</a></li> -->
+              <li><a href="invoice.html">Self Invoice</a></li>
+            </ul>
+          </div>
+        </div>
+        <ul class="left_submenu">
+          <li><a href="schnieder_notifcations.html"><img src="images/icon_5.gif">&nbsp;&nbsp;Notification</a></li>
+          <li><a href="report.html"><img src="images/icon_6.gif">&nbsp;&nbsp;Report</a></li>
+        </ul>
+    </div>
+    <div class="dashboard_right">
+        <h3>Consumption</h3>
+        <div style="text-align: center" class="alert alert-success" ng-show="sucess">
+          {{transactionId}} 
+        </div>
+        <div style="text-align: center" class="alert alert-danger" ng-show="fialuier">
+          Could not consume data
+        </div>
+        <div class="col-md-4">
+            <label>Consumption record Id</label>
+            <input type="text" ng-model="recordId">
+          </div>
+        <div class="col-md-4">
+          <label>PO Number</label>
+          <input type="text" ng-model="PONumber">
+        </div>
+        <div class="col-md-4">
+            <label>Quantity Consumed</label>
+            <input type="text" ng-model="POQty">
+        </div>
+        <div class="col-md-4">
+            <label>Date of consumption</label>
+            <input type="date" ng-model="dateOfConsumption">
+        </div>
+        <div class="col-md-4">
+            <label>Material Code</label>
+            <input type="text" ng-model="materialCode">
+        </div>
+        <div class="clearfix"></div>
+      <div class="submit_block"></div>
+      
+      <input type="submit" value="SUBMIT" ng-click="submit()">
+    </div>
+    <div class="clearfix"></div>
+  </div>
+  <!-- Content Section ends here--> 
+  
+  <!-- Footer Section starts here-->
+  <footer class="footer">©  copyright 2018</footer>
+  <!-- Footer Section ends here--> 
+  </div>
+</div>
+<script>
+
+
+    var app = angular.module('myApp', []);
+       
+       app.controller('myCtrl',['$scope','$http','$timeout',function ($scope,$http,$timeout) {
+        var acc = document.getElementsByClassName("accordion");
+        var i;
+        $scope.fialuier=false
+        $scope.sucess=false
+        for (i = 0; i < acc.length; i++) {
+          acc[i].addEventListener("click", function() {
+            this.classList.toggle("active");
+            var panel = this.nextElementSibling;
+            if (panel.style.maxHeight){
+              panel.style.maxHeight = null;
+            } else {
+              panel.style.maxHeight = panel.scrollHeight + "px";
+            } 
+          });
+        }
+         $scope.submit = function(){
+         $scope.setValue();
+         }
+         $scope.setValue=function() {
+           var dateOfConsumption = new Date();
+           dateOfConsumption=$scope.dateOfConsumption
+           var request=
+                                            
+                      {
+                        "$class": "com.cts.ipm.p2pNetwork.RecordConsumption",
+                        "recordId": $scope.recordId,
+                        "consumptionrecord": {
+                          "$class": "com.cts.ipm.p2pNetwork.newConsumptionRecord",
+                          "poNumber": $scope.PONumber,
+                          "lineNum": "",
+                          "materialCode": $scope.materialCode,
+                          "quantity": "",
+                          "UOP": "",
+                          "materialDoceDate":dateOfConsumption.toString(),
+                          "consumptionQuantity": $scope.POQty,
+                          "invDocNum": $scope.materialCode+"_"+$scope.recordId
+                        }
+                      }
+
+             var requestInfo = Request();
+           
+             data : requestInfo
+         
+           var res = $http.post('http://ec2-35-173-231-185.compute-1.amazonaws.com:3000/api/RecordConsumption',request).then(function successCallback(response){
+                  // alert("Successfully placed order");
+                   $scope.update_response=response;
+                   $scope.sucess=true
+                   $scope.transactionId=$scope.update_response.data.transactionId
+                   
+               }, function errorCallback(response){
+                 $scope.fialuier=true
+               });
+         }
+         $scope.navigate=function(url){
+          window.location = url;
+
+        }
+         function Request() {
+         
+           return {
+             "Request" : 
+                {
+                  "$class": "com.cts.ipm.p2pNetwork.RecordConsumption",
+                  "recordId": "",
+                  "consumptionrecord": {
+                    "$class": "com.cts.ipm.p2pNetwork.newConsumptionRecord",
+                    "poNumber": "",
+                    "lineNum": "",
+                    "materialCode": "",
+                    "quantity": "",
+                    "UOP": "",
+                    "materialDoceDate": "",
+                    "consumptionQuantity": "",
+                    "invDocNum": ""
+                  }
+                }
+                
+             }
+           };
+         }]);
+</script>
+</body>
+</html>

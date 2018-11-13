@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Schneider</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="css/bootstrap.min.css" rel="stylesheet">
+<link href="css/style.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+</head>
+<body>
+  <div ng-app="myApp" ng-controller="myCtrl">
+<div class="container-fluid"> 
+
+<!-- Header Section starts here-->
+<header class="header_bg">
+    <div class="header_left"></div>
+    <div class="header_right"></div>
+    <div class="container">
+      <div class="logo_pharma"> <a href="index.html"><img src="images/logo.png" alt="logo"/></a> </div>
+      <div class="banner_text_right"> Blockchain for Business<br>
+        <b>WITH IBM BLOCKCHAIN</b> </div>
+    </div>
+  </header>
+  <!-- Header Section ends here--> 
+  
+  <!-- Content Section ends here-->
+  <div class="breadcrumb_main">
+    <div class="left"><a href="#"><img src="images/back.png">&nbsp;Home</a></div>
+    <div class="right"><a href="#"><img src="images/sign_out.png">&nbsp;Signout</a></div>
+    <div class="clearfix"></div>
+  </div>
+  <div class="dashboard">
+    <div class="dashboard_left">
+      <h1>Schneider</h1>
+      <div class="user"><span>Username</span>
+        Cheif Supplying Officer</div>
+      <div class="left_menu">
+        <button class="accordion"><img src="images/icon_1.gif">&nbsp;&nbsp;Create</button>
+        <div class="panel">
+          <ul>
+            <li><a href="schneider_purchase.html">Purchase Order</a></li>
+            <li><a href="schneider_goodReceipt.html">Goods Receipt</a></li>
+          </ul>
+        </div>
+        <button class="accordion_1" ng-click="navigate('consumption.html')"><img src="images/icon_2.gif">&nbsp;&nbsp;Consumption</button>
+        <button class="accordion_1" ng-click="navigate('payment.html')"><img src="images/icon_3.gif">&nbsp;&nbsp;Payment</button>
+        <button class="accordion"><img src="images/icon_4.gif">&nbsp;&nbsp;Search</button>
+        <div class="panel">
+          <ul>
+            <li><a href="search_po.html">Purchase Order</a></li>
+            <!-- <li><a href="#">Goods Receipt</a></li> -->
+            <li><a href="invoice.html">Self Invoice</a></li>
+          </ul>
+        </div>
+      </div>
+      <ul class="left_submenu">
+        <li><a href="schnieder_notifcations.html"><img src="images/icon_5.gif">&nbsp;&nbsp;Notification</a></li>
+        <li><a href="report.html"><img src="images/icon_6.gif">&nbsp;&nbsp;Report</a></li>
+      </ul>
+  </div>
+    <div class="dashboard_right">
+        <div style="text-align: center" class="alert alert-success" ng-show="sucess2">
+            {{transactionId}} 
+          </div>
+          <div style="text-align: center" class="alert alert-danger" ng-show="fialuier">
+            Could not register data
+          </div>
+        <h3>Purchase Order</h3>
+        <div ng-hide="search">
+                <h3>Purchase Order List</h3>
+                <table id="mytable">
+                          
+                            Goods greater than 90 days and Invoice not Generated
+                            <tr ng-repeat="n in PODataUnpaid">
+                              <td>Batch No. : <a href="#"><span ng-bind="n.batch"></span></a> Purchase Order No. : <a href="#"><span ng-bind="n.poNumber"></span>"</a> </span>  SE Meterial Code: <a href="#"><span ng-bind="n.materialCode"></span></a>  Quantity: <a href="#"><span ng-bind="n.quantity"></span></a> <a href="#" ng-click="generateInvoice()"><img src="images/arrow.png"></a></span></td>
+                                </tr>
+                  </table>
+
+                  <div ng-show="fall"  class="alert alert-danger">
+                        No Data to dispaly
+                    </div>
+                </div>
+                  <div  ng-show="search">
+                       <div class="dashboard_drk_right">
+                      <h3> Shippment Data</h3>
+                      <div style="text-align: center" class="alert alert-success" ng-show="sucess2">
+                          {{transactionId}} 
+                        </div>
+                        <div style="text-align: center" class="alert alert-danger" ng-show="fialuier3">
+                            Invoice generation faied
+                           </div>
+                  <div class="col-md-4">
+                    <label>Invoice ID</label>
+                    <input type="text" ng-model="invoiceId">
+                  </div>
+                  
+                      <div class="clearfix"></div>
+                    <div class="submit_block"></div>
+                    
+                    <input type="submit" value="SUBMIT" ng-click="generate()">
+                  </div>
+                </div>
+               
+                <div class="clearfix"></div>
+                
+              </div>
+              <div class="clearfix"></div>
+  </div>
+              
+  <!-- Content Section ends here--> 
+  
+  <!-- Footer Section starts here-->
+  <footer class="footer">©  copyright 2018</footer>
+  <!-- Footer Section ends here--> 
+  </div>
+</div>
+<script>
+
+
+    var app = angular.module('myApp', []);
+       
+       app.controller('myCtrl',['$scope','$http','$timeout',function ($scope,$http,$timeout) {
+        $scope.PODataUnpaid=[];
+          $scope.poData={}
+          $scope.poData.poNumber=""
+          $scope.poData.diffDays=""
+          $scope.poData.poStatus=""
+          $scope.poData.batchId=""
+          $scope.poData.materialCode=""
+          $scope.val="1"
+          $scope.search=false
+          $scope.BatchId=""
+          $scope.PONumber=""
+          $scope.LineNo=" "
+          $scope.price=" "
+          $scope.SEMeterialCode=" "
+          $scope.POQty=" "
+          $scope.UOP=" "
+          $scope.DeliveryDate=" "
+         $scope.Currency=" "
+         $scope.deliveryNoteNo=" "
+         $scope.shippmentDate=" "
+         $scope.shippedQty=" "
+         $scope.invoiceId=""
+         $scope.search=false
+         var acc = document.getElementsByClassName("accordion");
+        var i;
+        $scope.CreationDate = new Date();
+        for (i = 0; i < acc.length; i++) {
+          acc[i].addEventListener("click", function() {
+            this.classList.toggle("active");
+            var panel = this.nextElementSibling;
+            if (panel.style.maxHeight){
+              panel.style.maxHeight = null;
+            } else {
+              panel.style.maxHeight = panel.scrollHeight + "px";
+            } 
+          });
+        }
+          function init(){
+          var websocket =new WebSocket("ws://ec2-35-173-231-185.compute-1.amazonaws.com:3000");
+          websocket.addEventListener('open',evt =>doSocketOpen(evt));
+          websocket.addEventListener('message',evt =>doSocketMessage(evt));
+          websocket.addEventListener('close',evt =>doSocketClose(evt));
+          }
+          function doSocketClose(evt) {
+          console.log('Close.');
+          }
+          function doSocketMessage(evt) {
+            let data={}
+          data =JSON.parse(evt.data);
+        
+          for(var i=0;i<data.batch.length;i++){
+            if(data.batch[i].quantity>0 & data.batch[i].invoiceStatus=="Not Generated"){
+            $scope.poData.batch=data.batch[i].batchId
+            $scope.poData.poNumber=data.batch[i].poNumber
+            $scope.poData.materialCode=data.batch[i].materialCode
+            $scope.poData.quantity=data.batch[i].quantity
+            $scope.PODataUnpaid.push($scope.poData)
+            $scope.poData={}
+          } 
+      
+          }
+          evt.data=""
+          data =JSON.parse(evt.data);
+          console.log(data)
+          if($scope.PODataUnpaid.length==0){
+        $scope.fall=true
+      }
+          }
+
+          function doSocketOpen(evt) {
+          console.log('Open.');
+          }
+          init()
+          var requestInfo = Request();
+          var request=
+                         {
+                          "$class": "com.cts.ipm.p2pNetwork.display"
+                    }     
+          var res = $http.post('http://ec2-35-173-231-185.compute-1.amazonaws.com:3000/api/display',request).then(function successCallback(response){
+                     $scope.update_response=response;
+                     $scope.sucess=true
+                     $scope.transactionId=$scope.update_response.data.transactionId
+                    
+                     
+                 }, function errorCallback(response){
+                     console.log("POST-ing of data failed");
+                 });
+ 
+           
+           function Request() {
+           
+             return {
+               "Request" : {
+                "$class":  "com.cts.ipm.p2pNetwork.display"
+                
+               }
+               }
+             };
+             $scope.generate= function(){
+         $scope.setValueInvoice();
+         }
+         $scope.generateInvoice = function(){
+          $scope.search=true
+         }
+         $scope.setValueInvoice=function() {
+          $scope.CreationDate = new Date();
+           var requestInvoice=
+           {
+              "$class": "com.cts.ipm.p2pNetwork.generateInvoice",
+              "invDocNum":    $scope.invoiceId,
+              "selfinvoice": {
+                "$class": "com.cts.ipm.p2pNetwork.SelfInvoice",
+                "selfinvoice": {
+                  "$class": "com.cts.ipm.p2pNetwork.newSelfInvoice",
+                  "poNumber": "",
+                  "lineNum": "",
+                  "materialCode": "",
+                  "quantity": "",
+                  "UOP": "",
+                  "materialDoceDate":   $scope.CreationDate.toString(),
+                  "consumptionQuantity": "0"
+                },
+                "invoiceStatus": "",
+                "amount": "",
+                "invDocNum": $scope.invoiceId
+              }
+            }
+
+             var requestInfo = RequestInvoice();
+           
+             data : requestInfo
+         
+           var res = $http.post('http://ec2-35-173-231-185.compute-1.amazonaws.com:3000/api/generateInvoice',requestInvoice).then(function successCallback(response){
+                //   alert("Successfully placed order");
+                   $scope.update_response=response;
+                  
+                   $scope.Search1=true
+                   $scope.sucess2=true
+                   $scope.transactionId=$scope.update_response.data.transactionId
+                   
+               }, function errorCallback(response){
+                 $scope.fialuier3=true
+               });
+         }
+         $scope.navigate=function(url){
+          window.location = url;
+
+        }
+         function RequestInvoice() {
+         
+           return {
+             "Request" : {
+                "$class": "com.cts.ipm.p2pNetwork.generateInvoice",
+                "invDocNum": "",
+                "selfinvoice": {
+                  "$class": "com.cts.ipm.p2pNetwork.SelfInvoice",
+                  "selfinvoice": {
+                    "$class": "com.cts.ipm.p2pNetwork.newSelfInvoice",
+                    "poNumber": "",
+                    "lineNum": "",
+                    "materialCode": "",
+                    "quantity": "",
+                    "UOP": "",
+                    "materialDoceDate": "",
+                    "consumptionQuantity": ""
+                  },
+                  "invoiceStatus": "",
+                  "amount": "",
+                  "invDocNum": " "
+                }
+              }
+
+             }
+           };
+         }]);
+</script>
+</body>
+</html>

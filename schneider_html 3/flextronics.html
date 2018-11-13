@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Schneider</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="css/bootstrap.min.css" rel="stylesheet">
+<link href="css/style.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+</head>
+
+<body>
+    <div ng-app="myApp" ng-controller="myCtrl">
+<div class="container-fluid"> 
+  
+  <!-- Header Section starts here-->
+  <header class="header_bg">
+      <div class="header_left"></div>
+      <div class="header_right"></div>
+      <div class="container">
+        <div class="logo_pharma"> <a href="index.html"><img src="images/logo.png" alt="logo"/></a> </div>
+        <div class="banner_text_right"> Blockchain for Business<br>
+          <b>WITH IBM BLOCKCHAIN</b> </div>
+      </div>
+    </header>
+    <!-- Header Section ends here--> 
+    
+    <!-- Content Section ends here-->
+    <div class="breadcrumb_main">
+      <div class="left"><a href="#"><img src="images/back.png">&nbsp;Home</a></div>
+      <div class="right"><a href="#"><img src="images/sign_out.png">&nbsp;Signout</a></div>
+      <div class="clearfix"></div>
+    </div>
+    <div class="dashboard">
+      <div class="dashboard_left">
+        <h1>Schneider</h1>
+        <div class="user"><span>Username</span>
+          Cheif Supplying Officer</div>
+        <div class="left_menu">
+          <button class="accordion"><img src="images/icon_1.gif">&nbsp;&nbsp;Create</button>
+          <div class="panel">
+            <ul>
+              <li><a href="schneider_purchase.html">Purchase Order</a></li>
+              <li><a href="schneider_goodReceipt.html">Goods Receipt</a></li>
+            </ul>
+          </div>
+          <button class="accordion_1" ng-click="navigate('consumption.html')"><img src="images/icon_2.gif">&nbsp;&nbsp;Consumption</button>
+          <button class="accordion_1" ng-click="navigate('payment.html')"><img src="images/icon_3.gif">&nbsp;&nbsp;Payment</button>
+          <button class="accordion"><img src="images/icon_4.gif">&nbsp;&nbsp;Search</button>
+          <div class="panel">
+            <ul>
+              <li><a href="search_po.html">Purchase Order</a></li>
+              <!-- <li><a href="#">Goods Receipt</a></li> -->
+              <li><a href="invoice.html">Self Invoice</a></li>
+            </ul>
+          </div>
+        </div>
+        <ul class="left_submenu">
+          <li><a href="schnieder_notifcations.html"><img src="images/icon_5.gif">&nbsp;&nbsp;Notification</a></li>
+          <li><a href="report.html"><img src="images/icon_6.gif">&nbsp;&nbsp;Report</a></li>
+        </ul>
+    </div>
+    <div class="dashboard_right">
+        <table>
+                
+            <tr ><span ng-show="Unpaid">Goods Invoice generated and Unpaid</span></tr>
+                    <tr ng-repeat="n in PODataUnpaid">
+                          <td>Invoice No. : <a href="#">{{n.invoiceNo}}   </a> Material Code : <a href="#">{{n.materialCode}}    </a> Invoice Status : <a href="#">{{n.invoiceStatus}}</a>  Days:  {{n.diffDays}} </span>  Consumption Quantity <a href="#">{{n.consumptionQuantity}}</a> <a href="#"  ng-click="submit(n.invoiceNo)"><img src="images/arrow.png"></a></span></td>
+                        </tr>
+                     
+          </table>
+          <table>
+                  
+                          <tr><span ng-show="paid">Goods Invoice generated and paid</span></tr>
+                          <tr ng-repeat="m in PODataPaid">
+                                <td>Invoice No. : <a href="#">{{m.invoiceNo}}</a>Material Code : <a href="#">{{m.materialCode}}</a> Invoice Status  : <a href="#">{{m.invoiceStatus}}</a> Days:  {{m.diffDays}}</span>    Consumption Quantity: <a href="#">{{m.consumptionQuantity}}</a> </span></td>
+                              </tr>
+                             
+            </table>
+            <table>
+              
+                               <tr><span ng-show="notGen">Goods greater than 90 days and Invoice not Generated</span></tr>
+                                <tr ng-repeat="x in notGenerated">
+                                      <td>Invoice No. : <a href="#">{{x.invoiceNo}}</a>Material Code : <a href="#">{{x.materialCode}}</a> Invoice Status : <a href="#">{{x.invoiceStatus}}</a> Days:  {{x.diffDays}}</span>    Consumption Quantity: <a href="#">{{x.consumptionQuantity}}</a> <a href="#" ng-click="generateInvoice(n.invoiceNo)"><img src="images/arrow.png"></a></span></td>
+                                    </tr>
+              </table>
+  
+        </div>
+          <div  ng-show="Search">
+              <div style="text-align: center" class="alert alert-success" ng-show="sucess1">
+                  {{transactionId}} 
+                </div>
+                <div style="text-align: center" class="alert alert-danger" ng-show="fialuier1">
+                    Payment failed
+                   </div>
+          <div class="col-md-4">
+            <label>Invoice ID</label>
+            <input type="text" ng-model="invoiceId">
+            <label>Amount to be paid</label>
+            <input type="text" ng-model="totalPrice">
+            
+          </div>
+          <div class="col-md-4">
+            <label>Per Unit Price</label>
+            <input type="text" ng-model="perUnitPrice">
+          </div>
+          <div class="col-md-4">
+            <label>Total Quantity</label>
+            <input type="text" ng-model="quantity">
+          </div>
+          <div class="clearfix"></div>
+        <div class="submit_block"></div>
+        <input type="submit" value="SUBMIT" ng-click="pay()">
+      </div>
+      <div  ng-show="Search1">
+          <div style="text-align: center" class="alert alert-success" ng-show="sucess2">
+              {{transactionId}} 
+            </div>
+            <div style="text-align: center" class="alert alert-danger" ng-show="fialuier3">
+                Invoice generation faied
+               </div>
+      <div class="col-md-4">
+        <label>Invoice ID</label>
+        <input type="text" ng-model="invoiceId">
+      </div>
+      
+      <div class="clearfix"></div>
+    <div class="submit_block"></div>
+    <input type="submit" value="SUBMIT" ng-click="generate()">
+  </div>
+        </div>
+        <div class="clearfix"></div>
+      </div>
+      </div>
+              
+  <!-- Content Section ends here--> 
+  
+  <!-- Footer Section starts here-->
+  <footer class="footer">©  copyright 2018</footer>
+  <!-- Footer Section ends here--> 
+  </div>
+</div>
+
+<script>
+
+
+    var app = angular.module('myApp', []);
+       
+       app.controller('myCtrl',['$scope','$http','$timeout',function ($scope,$http,$timeout) {
+        $scope.PODataUnpaid=[];
+          $scope.notGenerated=[];
+          $scope.PODataPaid=[];
+          $scope.poData={}
+          $scope.poData.invoiceNo=""
+          $scope.poData.invoiceStatus=""
+          $scope.poData.consumptionQuantity=""
+          $scope.poData.diffDays=""
+          $scope.poData.materialCode=""
+          $scope.val="1"
+          $scope.Search=false
+          $scope.Search1=false
+          $scope.fialuier2=false
+          $scope.fialuier=false
+          $scope.fialuier1=false
+          $scope.BatchId=""
+          $scope.PONumber=""
+          $scope.LineNo=" "
+          $scope.price=" "
+          $scope.SEMeterialCode=" "
+          $scope.POQty=" "
+          $scope.UOP=" "
+          $scope.DeliveryDate=" "
+         $scope.Currency=" "
+         $scope.deliveryNoteNo=" "
+         $scope.shippmentDate=" "
+         $scope.shippedQty=" "
+         $scope.Unpaid=false
+         $scope.notGen=false
+         $scope.paid=false
+          function init(){
+          var websocket =new WebSocket("ws://ec2-35-173-231-185.compute-1.amazonaws.com:3000");
+          websocket.addEventListener('open',evt =>doSocketOpen(evt));
+          websocket.addEventListener('message',evt =>doSocketMessage(evt));
+          websocket.addEventListener('close',evt =>doSocketClose(evt));
+          }
+          function doSocketClose(evt) {
+          console.log('Close.');
+          }
+          function doSocketMessage(evt) {
+            let data={}
+            $scope.poData={}
+          data =JSON.parse(evt.data);
+          var datetime = new Date();
+          console.log(datetime);
+          var date1 = new Date(datetime);
+        
+            $scope.poData.invoiceNo=data.invDocNum
+            $scope.poData.materialCode=data.selfinvoice.materialCode
+          $scope.poData.invoiceStatus=data.invoiceStatus
+          $scope.poData.consumptionQuantity=data.selfinvoice.consumptionQuantity
+          var date2 = new Date( data.selfinvoice.materialDoceDate);
+          var timeDiff = Math.abs(date2.getTime() - date1.getTime());
+          $scope.poData.diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
+            if( $scope.poData.invoiceStatus=="Not Genetrated"){
+              $scope.notGen=true
+          $scope.notGenerated.push($scope.poData)
+         
+          } else if( $scope.poData.invoiceStatus=="Invoice Generated"){
+          $scope.Unpaid=true
+          $scope.PODataUnpaid.push($scope.poData)
+         
+          } else{
+         $scope.paid=true
+            $scope.PODataPaid.push($scope.poData)
+          }
+         
+          
+          evt.data=""
+          data =JSON.parse(evt.data);
+          console.log(data)
+          }
+
+          function doSocketOpen(evt) {
+          console.log('Open.');
+          }
+          init()
+          var requestInfo = Request();
+          var request=
+                         {
+                          "$class": "com.cts.ipm.p2pNetwork.displayInvoice"
+                    }     
+          var res = $http.post('http://ec2-35-173-231-185.compute-1.amazonaws.com:3000/api/displayInvoice',request).then(function successCallback(response){
+                     $scope.update_response=response;
+                     $scope.transactionId=$scope.update_response.data.transactionId
+                    
+                     
+                 }, function errorCallback(response){
+                     console.log("POST-ing of data failed");
+                 });
+ 
+           
+           function Request() {
+           
+             return {
+               "Request" : {
+                "$class": "com.cts.ipm.p2pNetwork.displayInvoice"
+                
+               }
+               }
+             };     
+             
+          
+          
+          $scope.fialuier=false
+        $scope.sucess=false
+        var acc = document.getElementsByClassName("accordion");
+        var i;
+        $scope.CreationDate = new Date();
+        for (i = 0; i < acc.length; i++) {
+          acc[i].addEventListener("click", function() {
+            this.classList.toggle("active");
+            var panel = this.nextElementSibling;
+            if (panel.style.maxHeight){
+              panel.style.maxHeight = null;
+            } else {
+              panel.style.maxHeight = panel.scrollHeight + "px";
+            } 
+          });
+        }
+        $scope.navigate=function(url){
+          window.location = url;
+
+        }
+         $scope.submit = function(){
+         $scope.setValue();
+         }
+         $scope.setValue=function() {
+           var DeliveryDate = new Date();
+           DeliveryDate=$scope.DeliveryDate
+           var CreationDate = new Date();
+           CreationDate=$scope.CreationDate
+           var request=
+                       {
+                         "$class": "com.cts.ipm.p2pNetwork.PlaceOrder",
+                         "poNumber": $scope.PONumber,
+                         "purchaseorder": {
+                           "$class": "com.cts.ipm.p2pNetwork.newPurchaseOrder",
+                           "lineNumber": $scope.LineNo,
+                           "materialCode": $scope.SEMeterialCode,
+                           "quantity": $scope.POQty,
+                           "requiredQuantity":"0",
+                           "uop": $scope.UOP,
+                           "deliveryDate": DeliveryDate.toString(),
+                           "creationDate": CreationDate.toString(),
+                           "price": $scope.Price,
+                           "currency": $scope.Currency,
+                           "supplier": $scope.Supplier,
+                           "manufacturer": " ",
+                           "status":"open"
+                         }
+                       }
+             var requestInfo = Request();
+           
+             data : requestInfo
+         
+           var res = $http.post('http://ec2-35-173-231-185.compute-1.amazonaws.com:3000/api/PlaceOrder',request).then(function successCallback(response){
+                   //alert("Successfully placed order");
+                   $scope.update_response=response;
+                   $scope.sucess=true
+                   $scope.transactionId=$scope.update_response.data.transactionId
+                   
+               }, function errorCallback(response){
+                   $scope.fialuier=true
+               });
+         }
+  
+         function Request() {
+         
+           return {
+             "Request" : {
+               "$class": "com.cts.ipm.p2pNetwork.PlaceOrder",
+               "poNumber": " ",
+               "purchaseorder": {
+                 "$class": "com.cts.ipm.p2pNetwork.newPurchaseOrder",
+                 "lineNumber": " ",
+                 "materialCode": " ",
+                 "quantity": " ",
+                 "requiredQuantity": "",
+                 "uop": " ",
+                 "deliveryDate": " ",
+                 "creationDate": " ",
+                 "price": " ",
+                 "currency": " ",
+                 "supplier": " ",
+                 "manufacturer": " ",
+                 "status": ""
+               }
+             }
+             }
+
+           };
+         }]);
+</script>
+</body>
+</html>

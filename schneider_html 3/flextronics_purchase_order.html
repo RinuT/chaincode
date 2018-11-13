@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Schneider</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="css/bootstrap.min.css" rel="stylesheet">
+<link href="css/style.css" rel="stylesheet">
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+<script src="https://rawgit.com/gdi2290/angular-websocket/v1.0.9/angular-websocket.js"></script>
+<link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+</head>
+
+<body>
+    <div ng-app="myApp" ng-controller="myCtrl">
+<div class="container-fluid"> 
+  
+  <!-- Header Section starts here-->
+  <header class="header_bg">
+    <div class="header_left"></div>
+    <div class="header_right"></div>
+    <div class="container">
+      <div class="logo_pharma"> <a href="index.html"><img src="images/logo.png" alt="logo"/></a> </div>
+      <div class="banner_text_right"> Blockchain for Business<br>
+        <b>WITH IBM BLOCKCHAIN</b> </div>
+    </div>
+  </header>
+  <!-- Header Section ends here--> 
+  
+  <!-- Content Section ends here-->
+  <div class="breadcrumb_main">
+    <div class="left"><a href="#"><img src="images/back.png">&nbsp;Home</a></div>
+    <div class="right"><a href="#"><img src="images/sign_out.png">&nbsp;Signout</a></div>
+    <div class="clearfix"></div>
+  </div>
+  <div class="dashboard_drk">
+    <div class="dashboard_drk_left">
+      <h1>Flextronics</h1>
+      <div class="user"><span>Username</span>
+        Cheif Supplying Officer</div>
+		<ul class="left_menu"><li><a href="flextronics_purchase_order.html"><img src="images/icon_9.png">Purchase Order</a></li><li><a href="self_invoice.html"><img src="images/icon_10.png">Invoice</a></li><div class="clearfix"></div></ul>
+      
+      <ul class="left_submenu">
+        <li><a href="notification.html"><img src="images/icon_7.png">&nbsp;&nbsp;Notification</a></li>
+        <li><a href="self_invoice.html"><img src="images/icon_8.png">&nbsp;&nbsp;Report</a></li>
+      </ul>
+    </div>
+    <div class="dashboard_drk_right">
+      <div ng-hide="search">
+      <h3>Purchase Order List</h3>
+      <div style="text-align: center" class="alert alert-danger" ng-show="failuer1">
+         No data to display
+        </div>
+      <table id="mytable">
+                  <tr ng-repeat="m in POData" >
+                    <td>  Purchase Order No. : <a href="#">{{m.poNumber}}</a> | PO Date: {{m.poDate}}<span class="status">Status: <span ng-class="{red: m.val==1,green:m.val==0}">{{m.poStatus}}</span> <a href="#" ng-click="submit(m.poNumber)"><img src="images/arrow.png"></a></span></td>
+                  </tr>
+        </table>
+      </div>
+        <div  ng-show="search">
+             <div class="dashboard_drk_right">
+            <h3> Shippment Data</h3>
+            <div style="text-align: center" class="alert alert-success" ng-show="sucess">
+                {{transactionId}} 
+              </div>
+              <div style="text-align: center" class="alert alert-danger" ng-show="failuer2">
+                Could not ship data
+              </div>
+            <div class="col-md-4">
+              <label>PO Number</label>
+              <input type="text"  ng-model="PONumber" readonly>
+              <label>PO Qty</label>
+              <input type="text"  ng-model="POQty" readonly>
+              <label>PO Creation Date</label>
+              <input type="date" ng-model="dateC" readonly>
+              <label>Batch ID</label>
+              <span class="wht"><input type="text" ng-model="BatchId" ></span>
+              <label>Delivery Note Number</label>
+              <span class="wht"><input type="text" ng-model="deliveryNoteNumber" ></span>
+            </div>
+            <div class="col-md-4">
+              <label>Line No.</label>
+              <input type="text" ng-model="LineNo" readonly>
+              <label>UOP</label>
+              <input type="text" ng-model="UOP" readonly>
+              <label>Price</label>
+              <input type="text" ng-model="price" readonly>
+              <label>Shipment Date</label>
+              <span class="wht"><input type="date" ng-model="ShipmentDate"></span>
+              
+            </div>
+            <div class="col-md-4">
+              <label>SE Meterial Code</label>
+              <input type="text" ng-model="SEMeterialCode" readonly>
+              <label>Delivery Date</label>
+              <input type="date" ng-model="dateD" readonly>
+              <label>Currency</label>
+              <input type="text" ng-model="Currency" readonly>
+              <label>Shipment Qty</label>
+              <span class="wht"><input type="text" ng-model="shipmentQuantity"></span>
+            </div>
+            <div class="clearfix"></div>
+          <div class="submit_block"></div>
+          
+          <input type="submit" value="SUBMIT" ng-click="proceed()">
+        </div>
+      </div>
+     
+      <div class="clearfix"></div>
+	  
+    </div>
+    <div class="clearfix"></div>
+  </div>
+  <!-- Content Section ends here--> 
+  
+  <!-- Footer Section starts here-->
+  <footer class="footer">©  copyright 2018</footer>
+  <!-- Footer Section ends here--> 
+  </div>
+</div>
+</body>
+<script>
+  
+    var app = angular.module('myApp', []);
+       
+         app.controller('myCtrl',['$scope','$http','$timeout',function ($scope,$http,$timeout) {
+          $scope.POData=[];
+          $scope.poData={}
+          $scope.poData.poNumber=""
+          $scope.poData.poDate=""
+          $scope.poData.poStatus=""
+          $scope.search=false
+          $scope.BatchId=""
+          $scope.PONumber=""
+          $scope.LineNo=" "
+          $scope.price=" "
+          $scope.SEMeterialCode=" "
+          $scope.POQty=" "
+          $scope.UOP=" "
+          $scope.DeliveryDate=" "
+         $scope.Currency=" "
+         $scope.deliveryNoteNo=" "
+         $scope.shippmentDate=" "
+         $scope.shippedQty=" "
+         $scope.poData.val=" "
+         $scope.failuer1=false
+         $scope.failuer2=false
+          function init(){
+          var websocket =new WebSocket("ws://ec2-35-173-231-185.compute-1.amazonaws.com:3000");
+          websocket.addEventListener('open',evt =>doSocketOpen(evt));
+          websocket.addEventListener('message',evt =>doSocketMessage(evt));
+          websocket.addEventListener('close',evt =>doSocketClose(evt));
+          }
+          function doSocketClose(evt) {
+          console.log('Close.');
+          }
+          function doSocketMessage(evt) {
+            let data={}
+          data =JSON.parse(evt.data);
+          if($scope.search==false){
+         
+          //for(var i=0;i<data.podata.length;i++){
+          $scope.poData.poNumber=data.poNumber
+          $scope.poData.poDate=data.purchaseorder.creationDate
+          $scope.poData.poStatus=data.purchaseorder.status
+          
+          if( $scope.poData.poStatus=="Closed"){
+            $scope.poData.val=1;
+          }
+          else
+          $scope.poData.val=0;
+          $scope.POData.push($scope.poData)
+          $scope.POData.length;
+          $scope.poData={}
+          //}
+          }
+          else{
+         // $scope.batchId=data.purchaseorder.creationDate
+         
+          $scope.PONumber=data.poNumber
+          $scope.LineNo=data.purchaseorder.lineNumber
+          $scope.price=data.purchaseorder.price
+          $scope.SEMeterialCode=data.purchaseorder.materialCode
+          $scope.POQty=data.purchaseorder.quantity
+          $scope.UOP=data.purchaseorder.uop
+          $scope.POCreationDate=data.purchaseorder.creationDate
+          $scope.DeliveryDate=data.purchaseorder.deliveryDate
+          $scope.dateC = new Date($scope.POCreationDate); 
+          $scope.dateD = new Date($scope.DeliveryDate);
+         $scope.Currency=data.purchaseorder.currency
+          
+          }
+          evt.data=""
+          data =JSON.parse(evt.data);
+          console.log(data)
+          }
+
+          function doSocketOpen(evt) {
+          console.log('Open.');
+          }
+          init()
+          var requestInfo = Request();
+          var request=
+                         {
+                          "$class": "com.cts.ipm.p2pNetwork.displayOrders",
+                          "supplier":"flextronics"
+                    }     
+          var res = $http.post('http://ec2-35-173-231-185.compute-1.amazonaws.com:3000/api/displayOrders',request).then(function successCallback(response){
+                     $scope.update_response=response;
+                     $scope.transactionId=$scope.update_response.data.transactionId
+                    
+                     
+                 }, function errorCallback(response){
+                     $scope.failuer1=true
+                 });
+ 
+           
+           function Request() {
+           
+             return {
+               "Request" : {
+                "$class": "com.cts.ipm.p2pNetwork.displayOrders",
+                "supplier": "flextronics"
+                
+                }
+               }
+             };
+          $scope.submit=function(id){
+              $scope.id=id
+              $scope.search=true
+              console.log(id)
+              $scope.setSearchValue()
+
+          }
+          $scope.setSearchValue=function() {
+             var request=
+                         {
+                          "$class": "com.cts.ipm.p2pNetwork.searchOrder",
+                          "poNumber": $scope.id
+                    }
+                    
+               var requestInfo = RequestSearch();
+             
+               data : requestInfo
+           
+             var res = $http.post('http://ec2-35-173-231-185.compute-1.amazonaws.com:3000/api/searchOrder',request).then(function successCallback(response){
+                     //$scope.update_response=response;
+                     
+                    
+                    // $scope.transactionId=$scope.update_response.data.transactionId
+                     
+                 }, function errorCallback(response){
+
+                 });
+           }
+           
+ 
+        function RequestSearch() {
+           
+           return {
+                
+            "Request" : {
+                "$class": "com.cts.ipm.p2pNetwork.searchOrder",
+                "poNumber": ""
+              }
+             }
+           };
+           $scope.proceed=function(){
+              $scope.search=true
+              $scope.setProceed()
+
+          }
+          $scope.setProceed=function() {
+            var shipmentDate = new Date();
+            shipmentDate=$scope.ShipmentDate
+             var request=
+                         {
+                          "$class": "com.cts.ipm.p2pNetwork.ShipmentNotification",
+                        "batchId": $scope.BatchId,
+                        "deliverynote": {
+                        "$class": "com.cts.ipm.p2pNetwork.delNote",
+                        "poNumber": $scope.PONumber,
+                        "lineNumber":  $scope.LineNo,
+                        "deliveryNoteNumber": $scope.deliveryNoteNumber,
+                        "materialCode": $scope.SEMeterialCode,
+                        "quantity": $scope.POQty,
+                        "UOP": $scope.UOP,
+                        "shipmentDate": shipmentDate.toString(),
+                        "shipmentQuantity": $scope.shipmentQuantity,
+                        "supplierId": "flextronics"
+                    }
+                         }
+                    
+               var requestInfo = RequestProceed();
+             
+               data : requestInfo
+           
+             var res = $http.post('http://ec2-35-173-231-185.compute-1.amazonaws.com:3000/api/ShipmentNotification',request).then(function successCallback(response){
+                     $scope.update_response=response;
+                     $scope.transactionId=$scope.update_response.data.transactionId
+                     $scope.sucess=true
+                     
+                 }, function errorCallback(response){
+                  $scope.failuer2=true
+                 });
+           }
+           
+ 
+        function RequestProceed() {
+           
+           return {
+                
+            "Request" : {
+                "$class": "com.cts.ipm.p2pNetwork.ShipmentNotification",
+                "batchId": " ",
+                "deliverynote": {
+                  "$class": "com.cts.ipm.p2pNetwork.delNote",
+                  "poNumber": " ",
+                  "lineNumber": " ",
+                  "deliveryNoteNumber": " ",
+                  "materialCode": " ",
+                  "quantity": " ",
+                  "UOP": " ",
+                  "shipmentDate": " ",
+                  "shipmentQuantity": " ",
+                  "supplierId": " ",
+                 
+              }
+              }
+             }
+
+           };
+           }]);
+        </script>
+</html>
